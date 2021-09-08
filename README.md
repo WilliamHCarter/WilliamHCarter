@@ -28,9 +28,10 @@
 <img align="left" alt="Visual Studio Code" width="26px" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/vscode/vscode-original.svg" />
 <img align="left" alt="Jira" width="26px" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/jira/jira-original.svg" />
 <img align="left" alt="Figma" width="26px" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/figma/figma-original.svg" />
+<img align="left" alt="PostgreSQL" width="26px" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/postgresql/postgresql-original.svg" />
+<img align="left" alt="Node.js" width="26px" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original.svg" />
 <img align="left" alt="Git" width="26px" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/git/git-original.svg" />
 <img align="left" alt="GitHub" width="26px" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/github/github-original.svg" />
-<img align="left" alt="Node.js" width="26px" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original.svg" />
 <img align="left" alt="Unity" width="26px" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/unity/unity-original.svg" />
 <img align="left" alt="MATLAB" width="26px" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/matlab/matlab-original.svg" />
 
