@@ -6,11 +6,6 @@
 - 🌱 I’m currently learning mobile and native stacks, as well as some new ML workflows.
 - 🌎 I’m looking to collaborate with software developers on interesting or unorthodox projects.
 
-### Connect with me:
-
-[<img align="left" alt="williamhcarter-website" width="22px" src="https://raw.githubusercontent.com/iconic/open-iconic/master/svg/globe.svg" />][website]
-[<img align="left" alt="wiliamhcarter | LinkedIn" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/linkedin.svg" />][linkedin]
-<br />
 
 ### Languages:
 <img align="left" alt="C" width="26px" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/c/c-original.svg" />
@@ -44,7 +39,11 @@
 <img align="left" alt="MATLAB" width="26px" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/matlab/matlab-original.svg" />
 
 <br />
+### Connect with me:
 
+[<img align="left" alt="williamhcarter-website" width="22px" src="https://raw.githubusercontent.com/iconic/open-iconic/master/svg/globe.svg" />][website]
+[<img align="left" alt="wiliamhcarter | LinkedIn" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/linkedin.svg" />][linkedin]
+<br />
 ---
 
 [website]: https://williamhcarter.github.io/
