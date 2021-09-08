@@ -39,6 +39,7 @@
 <img align="left" alt="MATLAB" width="26px" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/matlab/matlab-original.svg" />
 
 <br />
+
 ### Connect with me:
 
 [<img align="left" alt="williamhcarter-website" width="22px" src="https://raw.githubusercontent.com/iconic/open-iconic/master/svg/globe.svg" />][website]
