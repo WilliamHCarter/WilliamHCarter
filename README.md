@@ -49,7 +49,7 @@
 <br />
 ---
 
-[website]: https://williamhcarter.github.io/
+[website]: https://williamcarter.dev/
 [linkedin]: https://www.linkedin.com/in/williamhcarter/
 
 <!-- ![Will's github stats](https://github-readme-stats.vercel.app/api?username=WilliamHCarter&show_icons=true&hide_border=true)-->
