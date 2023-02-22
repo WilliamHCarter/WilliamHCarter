@@ -43,7 +43,7 @@
 
 ### Connect with me:
 
-[<img align="left" alt="williamhcarter-website" width="22px" src="https://williamcarter.dev/logo1.png" />][website]
+[<img align="left" alt="williamhcarter-website" width="22px" src="https://williamcarter.dev/apple-touch-icon.png" />][website]
 [<img align="left" alt="wiliamhcarter | LinkedIn" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/linkedin.svg" />][linkedin]
 <br />
 ---
