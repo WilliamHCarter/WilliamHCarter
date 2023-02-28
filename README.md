@@ -1,7 +1,7 @@
 ## I'm Will, a Software Developer based in Boston MA
 - 🔭 I’m currently working on some new projects, kept private for now.
 - 🌱 I’m currently learning new web and mobile stacks, as well as some new ML workflows.
-- 🌎 I’m looking to collaborate with software developers on interesting or unorthodox projects.
+- 🌎 I’m looking to collaborate with software developers on interesting and unorthodox projects.
 
 
 ### Languages:
