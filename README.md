@@ -1,6 +1,7 @@
 ## Hi, I'm Will 👋
-- 🔭 I’m currently working on some new projects, kept private for now.
-- 🌱 I’m currently learning new web and mobile stacks, as well as some new ML workflows.
+Welcome to my Github! I'm currently a CS and Econ student at RPI, interested in Web and ML projects.
+- 🔭 I’m currently working on some private projects.
+- 🌱 I’m learning SolidJS, GraphQL, and playing around with Bevy.
 - 🌎 I’m looking to collaborate with software developers on interesting and unorthodox projects.
 <br/>
 
