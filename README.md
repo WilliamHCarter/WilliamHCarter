@@ -38,12 +38,14 @@ Welcome to my Github! I'm currently a CS and Econ student at RPI, interested in 
         <br/>
           <img alt="Python" src="https://img.shields.io/badge/-Python-3776AB?style=flat-square&logo=python&logoColor=white" height="25"/>
       </td>
-      <td><img alt="Unity" src="https://img.shields.io/badge/-Unity-000000?style=flat-square&logo=unity&logoColor=white" height="25"/>
+      <td>
           <img alt="C" src="https://img.shields.io/badge/-C-A8B9CC?style=flat-square&logo=c&logoColor=white" height="25"/>
           <img alt="C++" src="https://img.shields.io/badge/-C++-00599C?style=flat-square&logo=c++&logoColor=white" height="25"/>
           <br/>
-          <img alt="C#" src="https://img.shields.io/badge/-CSharp-239120?style=flat-square&logo=csharp&logoColor=white" height="25"/>
+          <img alt="Unity" src="https://img.shields.io/badge/-Unity-000000?style=flat-square&logo=unity&logoColor=white" height="25"/>
           <img alt="Rust" src="https://img.shields.io/badge/-Rust-000000?style=flat-square&logo=rust&logoColor=white" height="25"/>
+          <br/>
+          <img alt="C#" src="https://img.shields.io/badge/-CSharp-239120?style=flat-square&logo=csharp&logoColor=white" height="25"/>
       </td>
       <td><img alt="Figma" src="https://img.shields.io/badge/-Figma-F24E1E?style=flat-square&logo=figma&logoColor=white" height="25"/>
           <img alt="VSCode" src="https://img.shields.io/badge/-VSCode-007ACC?style=flat-square&logo=visualstudiocode&logoColor=white" height="25"/>
