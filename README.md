@@ -46,6 +46,8 @@ Welcome to my Github! I'm currently a CS and Econ student at RPI, interested in 
           <img alt="Rust" src="https://img.shields.io/badge/-Rust-000000?style=flat-square&logo=rust&logoColor=white" height="25"/>
           <br/>
           <img alt="C#" src="https://img.shields.io/badge/-CSharp-239120?style=flat-square&logo=csharp&logoColor=white" height="25"/>
+          <br>
+          <img alt="Unreal Engine" src="https://img.shields.io/badge/-Unreal Engine-0E1128?style=flat-square&logo=unrealengine&logoColor=white" height="25"/>
       </td>
       <td><img alt="Figma" src="https://img.shields.io/badge/-Figma-F24E1E?style=flat-square&logo=figma&logoColor=white" height="25"/>
           <img alt="VSCode" src="https://img.shields.io/badge/-VSCode-007ACC?style=flat-square&logo=visualstudiocode&logoColor=white" height="25"/>
