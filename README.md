@@ -1,6 +1,6 @@
 ## Hi, I'm Will 👋
 Welcome to my Github! I'm currently a CS and Econ student at RPI, interested in Web and ML projects.
-- 🔭 I’m currently working on some private projects.
+- 🔭 I’m currently working on a few private projects.
 - 🌱 I’m learning SolidJS, GraphQL, and playing around with Bevy.
 - 🌎 I’m looking to collaborate with software developers on interesting and unorthodox projects.
 
