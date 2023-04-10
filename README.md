@@ -34,7 +34,7 @@ Welcome to my Github! I'm currently a CS and Econ student at RPI, interested in 
              <img alt="NodeJS" src="https://img.shields.io/badge/-NodeJS-339933?style=flat-square&logo=node.js&logoColor=white" height="25"/>
              <img alt="PostgreSQL" src="https://img.shields.io/badge/-PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white" height="25"/>
         </td>
-      <td><img alt="Tensorflow" src="https://img.shields.io/badge/-TensorFlow-FF6F00?style=flat-square&logo=tensorflow&logoColor=white"height="25" />
+      <td><img alt="PyTorch" src="https://img.shields.io/badge/-PyTorch-EE4C2C?style=flat-square&logo=pytorch&logoColor=white"height="25" />
         <br/>
           <img alt="Python" src="https://img.shields.io/badge/-Python-3776AB?style=flat-square&logo=python&logoColor=white" height="25"/>
       </td>
