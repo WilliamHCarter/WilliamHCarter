@@ -1,5 +1,5 @@
 ## Hi, I'm Will 👋
-Welcome to my Github! I'm currently a CS and Econ student at RPI, interested in Web and ML projects.
+Welcome to my Github! I'm a CS and Econ student at RPI, interested in Web and ML projects.
 - 🔭 I’m currently working on a few private projects.
 - 🌱 I’m learning SolidJS, GraphQL, and playing around with Zig.
 - 🌎 I’m looking to collaborate with software developers on interesting and unorthodox projects.
