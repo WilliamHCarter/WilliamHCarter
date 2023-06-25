@@ -55,8 +55,8 @@ Welcome to my Github! I'm a CS and Econ student at RPI, interested in Web and ML
           <img alt="Docker" src="https://img.shields.io/badge/-Docker-2496ED?style=flat-square&logo=docker&logoColor=white" height="25"/>
           <img alt="Terraform" src="https://img.shields.io/badge/-Terraform-7B42BC?style=flat-square&logo=terraform&logoColor=white" height="25"/>
           <br/>
-          <img alt="Notion" src="https://img.shields.io/badge/-Notion-000000?style=flat-square&logo=notion&logoColor=white" height="25"/>
           <img alt="Github" src="https://img.shields.io/badge/-Github-181717?style=flat-square&logo=github&logoColor=white" height="25"/>
+          <img alt="Notion" src="https://img.shields.io/badge/-Notion-000000?style=flat-square&logo=notion&logoColor=white" height="25"/>
       </td>
     </tr>
   </tbody>
