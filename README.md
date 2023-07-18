@@ -1,4 +1,4 @@
-## Hi, I'm Will 👋
+# Hi, I'm Will 👋
 Welcome to my Github! I'm a CS and Econ student at RPI, interested in Web and ML projects.
 - 🔭 I’m currently working on a few private projects.
 - 🌱 I’m learning SolidJS, Terraform, and playing around with Rust.
