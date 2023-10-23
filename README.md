@@ -44,7 +44,7 @@ Welcome to my Github! I'm a CS and Econ student at RPI, interested in Web and ML
           <br/>
           <img alt="C#" src="https://img.shields.io/badge/-CSharp-239120?style=flat-square&logo=csharp&logoColor=white" height="25"/>
           <br/>
-          <img alt="Rust" src="https://img.shields.io/badge/-Rust-000000?style=flat-square&logo=rust&logoColor=white" height="25"/>
+          <img alt="Godot" src="https://img.shields.io/badge/-Godot-478CBF?style=flat-square&logo=godotengine&logoColor=white" height="25"/>
           <img alt="Unity" src="https://img.shields.io/badge/-Unity-000000?style=flat-square&logo=unity&logoColor=white" height="25"/>  
         <br>
           <img alt="Unreal Engine" src="https://img.shields.io/badge/-Unreal Engine-0E1128?style=flat-square&logo=unrealengine&logoColor=white" height="25"/>
