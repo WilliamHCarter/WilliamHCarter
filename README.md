@@ -1,6 +1,6 @@
 # Hi, I'm Will 👋
 Welcome to my Github! I'm a CS and Econ student at RPI, interested in Web and ML projects.
-- 🔭 I’m currently working on imitation-learning systems for LLMs and RattlesnakeRidge, an ML-based mystery game.
+- 🔭 I’m currently working on RattlesnakeRidge, an ML-based mystery game.
 - 🌱 I’m learning SolidJS, Terraform, and playing around with Rust.
 - 🌎 I’m looking to collaborate with software developers on interesting and unorthodox projects.
 
