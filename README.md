@@ -37,6 +37,8 @@ Welcome to my Github! I'm a CS and Econ student at RPI, interested in Web and ML
       <td><img alt="PyTorch" src="https://img.shields.io/badge/-PyTorch-EE4C2C?style=flat-square&logo=pytorch&logoColor=white"height="25" />
         <br/>
           <img alt="Python" src="https://img.shields.io/badge/-Python-3776AB?style=flat-square&logo=python&logoColor=white" height="25"/>
+        <br/>
+          <img alt="LangChain" src="https://img.shields.io/badge/-LangChain-2C4F7C?style=flat-square" height="25"/>
       </td>
       <td>
           <img alt="C" src="https://img.shields.io/badge/-C-A8B9CC?style=flat-square&logo=c&logoColor=white" height="25"/>
