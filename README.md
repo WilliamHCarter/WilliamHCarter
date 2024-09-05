@@ -1,12 +1,11 @@
-# Hi, I'm Will 👋
-Welcome to my Github! I'm a CS and Econ student at RPI, interested in Web and ML projects.
-- 🔭 I’m currently working on RattlesnakeRidge, an ML-based mystery game.
-- 🌱 I’m learning SolidJS, Terraform, and playing around with Rust.
-- 🌎 I’m looking to collaborate with software developers on interesting and unorthodox projects.
+# Will Carter
+Software developer working on Web & ML Projects
+
+**Current Project:** [zfetch](https://github.com/WilliamHCarter/zfetch)
 
 
 
-## Things I code with:
+## Technical Skills:
 
 <table>
   <thead>
@@ -64,10 +63,6 @@ Welcome to my Github! I'm a CS and Econ student at RPI, interested in Web and ML
   </tbody>
 </table>
 
-## Connect with me:
 <p><a href="https://www.williamcarter.dev" target="_blank"><img alt="Website" src="https://img.shields.io/badge/Website-%2312100E.svg?&style=for-the-badge&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDE0NCAxNDQiPgo8cGF0aCBmaWxsPSJyZ2IoMjU2LDI1NiwyNTYpIiBmaWxsLW9wYWNpdHk9IjEuMDAwIiBkPSJNIDQ4LjMxIDAuMDAgUSA1Ni4wNiAwLjAwIDYzLjgxIDAuMDAgUSA2NC4xNCA3LjI1IDYzLjk4IDE1LjMyIEEgMC42NyAwLjY3IC04OS42IDAgMCA2NC42NSAxNi4wMCBMIDk1LjEwIDE2LjAwIEEgMC45NCAwLjkzIC0xLjIgMCAwIDk2LjA0IDE1LjAzIFEgOTUuNzcgNi44NiA5Ni4zMSAwLjAwIFEgMTA0LjA2IDAuMDAgMTExLjgxIDAuMDAgUSAxMTIuMjggMzEuNjYgMTExLjgyIDYzLjMxIEEgMC41MyAwLjUyIC05MC4wIDAgMSAxMTEuMzEgNjMuODMgTCA5Ni41NSA2NC4wNyBBIDAuNTEgMC41MCAtODkuNCAwIDAgOTYuMDUgNjQuNTcgTCA5Ni4wMSA3OS4zMyBBIDAuNjcgMC42NiAwLjQgMCAwIDk2LjY4IDgwLjAwIEwgMTExLjMzIDgwLjAwIEEgMC42NyAwLjY3IDQ1LjAgMCAxIDExMi4wMCA4MC42NyBRIDExMi4wMCAxMTEuNzUgMTEyLjAwIDE0Mi43NSBRIDExMi4wMCAxNDMuNjUgMTExLjY5IDE0NC4wMCBRIDYzLjk0IDE0NC4wMCAxNi4xOSAxNDQuMDAgUSAxNS44NiAxMzcuMzggMTYuMDMgMTI5LjIwIEEgMS4xNSAxLjE1IC0wLjIgMCAwIDE0Ljg0IDEyOC4wMiBRIDcuNzQgMTI4LjIzIDAuMDAgMTI3LjY5IFEgMC4wMCAxMDMuOTQgMC4wMCA4MC4xOSBRIDcuMTIgNzkuODYgMTUuMDggODAuMDIgQSAwLjkxIDAuOTEgMC4zIDAgMCAxNi4wMCA3OS4xMSBMIDE2LjAwIDY0LjY3IEEgMC42NyAwLjY3IC00NS4wIDAgMSAxNi42NyA2NC4wMCBMIDMxLjMzIDY0LjAwIEEgMC42NyAwLjY3IDQ1LjAgMCAxIDMyLjAwIDY0LjY3IEwgMzIuMDAgNzkuMzMgQSAwLjY4IDAuNjcgMC4wIDAgMSAzMS4zMiA4MC4wMCBMIDE2LjU2IDgwLjA2IEEgMC41MCAwLjUwIDQ1LjAgMCAwIDE2LjA2IDgwLjU2IEwgMTYuMDAgMTI3LjI0IEEgMC43MSAwLjY5IDg5LjYgMCAwIDE2LjcwIDEyNy45NSBMIDMxLjMxIDEyNy44NCBBIDAuNTQgMC41MiAtOTAuMCAwIDAgMzEuODIgMTI3LjMxIEwgMzIuMjQgOTYuNzQgQSAwLjUzIDAuNTIgLTAuNiAwIDEgMzIuNzUgOTYuMjMgTCA0Ny4zMSA5NS44MiBBIDAuNTMgMC41MiAtODkuNCAwIDAgNDcuODIgOTUuMzEgTCA0OC4yOSA4MC41NiBBIDAuNTIgMC41MCAwLjYgMCAxIDQ4LjgxIDgwLjA3IEwgNjMuMzEgNzkuODMgQSAwLjU0IDAuNTIgLTAuNiAwIDAgNjMuODQgNzkuMzEgTCA2My44NCA2NC42OSBBIDAuNTQgMC41MSAwLjYgMCAwIDYzLjMxIDY0LjE4IEwgNDguNjkgNjMuODIgQSAwLjUzIDAuNTIgOTAuMCAwIDEgNDguMTggNjMuMzAgUSA0Ny44NiAzMy4wMyA0OC4wMCAyLjc1IFEgNDguMDEgMC43NCA0OC4zMSAwLjAwIFoiLz4KPC9zdmc+" /></a> 
 <a href=https://www.linkedin.com/in/williamhcarter/ target="_blank"><img alt="LinkedIn" src="https://img.shields.io/badge/linkedin-%230077B5.svg?&style=for-the-badge&logo=linkedin&logoColor=white" /></a> 
-
-
-<!-- ![Will's github stats](https://github-readme-stats.vercel.app/api?username=WilliamHCarter&show_icons=true&hide_border=true)-->
 
