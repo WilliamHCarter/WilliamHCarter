@@ -1,10 +1,8 @@
-package main
+package handler
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
-	"os"
 	"strings"
 )
 
@@ -143,14 +141,4 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-}
-
-func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
-	http.HandleFunc("/", Handler)
-	fmt.Printf("Server is running on http://localhost:%s\n", port)
-	http.ListenAndServe(":"+port, nil)
 }
