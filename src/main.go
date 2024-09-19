@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-const svgTemplate = `<svg width="400" height="180" xmlns="http://www.w3.org/2000/svg">
+const svgTemplate = `<svg width="400" height="200" xmlns="http://www.w3.org/2000/svg">
     <defs>
         <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
             <feFlood result="flood" flood-color="#{{.TextColor}}" flood-opacity=".4"/>
@@ -34,6 +34,12 @@ const svgTemplate = `<svg width="400" height="180" xmlns="http://www.w3.org/2000
             <stop offset="80%" style="stop-color:rgba(36,22,6,1)" />
             <stop offset="100%" style="stop-color:rgba(20,12,4,1)" />
         </radialGradient>
+
+		<linearGradient id="scanlineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:rgba(0,0,0,0.025)" />
+            <stop offset="90%" style="stop-color:rgba(255,255,255,0.05)" />
+            <stop offset="100%" style="stop-color:rgba(0,0,0,0)" />
+        </linearGradient>
     </defs>
     
     <style>
@@ -41,21 +47,40 @@ const svgTemplate = `<svg width="400" height="180" xmlns="http://www.w3.org/2000
             fill: #{{.TextColor}}; 
             font-family: monospace; 
             font-size: 9px;
-			font-weight: bold;
+            font-weight: bold;
             filter: url(#glow);
             opacity: 0.8;
         }
+        @keyframes scanline {
+            0% {
+                transform: translateY(-100%);
+            }
+            100% {
+                transform: translateY(200%);
+            }
+        }
+		.scanline {
+			animation: scanline 6s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
+		}
     </style>
     
     <!-- Background with vignette effect -->
-    <rect width="100%" height="100%" fill="url(#vignette)"/>
+    <rect width="100%" height="100%" fill="url(#vignette)" rx="6" ry="6"/>
     
-    <!-- ASCII Art Text layer -->
-    <text x="10" y="20" class="text" xml:space="preserve">{{.Text}}</text>
+    <clipPath id="rounded-corners">
+        <rect width="100%" height="100%" rx="6" ry="6"/>
+    </clipPath>
+    
+    <g clip-path="url(#rounded-corners)">
+        <!-- ASCII Art Text layer -->
+        <text x="10" y="60" class="text" xml:space="preserve">{{.Text}}</text>
 
-    <!-- CRT overlay -->
-    <rect width="100%" height="100%" fill="url(#crtPattern)" style="mix-blend-mode: overlay;"/>
-</svg>`
+        <!-- CRT overlay -->
+        <rect width="100%" height="100%" fill="url(#crtPattern)" style="mix-blend-mode: overlay;"/>
+
+        <!-- Scanline effect -->
+        <rect class="scanline" x="0" y="0" width="400" height="50" fill="url(#scanlineGradient)" style="mix-blend-mode: overlay;"/>
+    </g></svg>`
 
 type SVGData struct {
 	Text            template.HTML
