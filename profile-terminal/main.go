@@ -88,16 +88,16 @@ type SVGData struct {
 	TextColor       string
 }
 
-func main() {
+func Handler(w http.ResponseWriter, r *http.Request) {
 	tmpl, err := template.New("svg").Parse(svgTemplate)
 	if err != nil {
-		panic(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		text := r.URL.Query().Get("text")
-		if text == "" {
-			text = `
+	text := r.URL.Query().Get("text")
+	if text == "" {
+		text = `
  _       ___ _____                    ______           __           
 | |     / (_) / (_)___ _____ ___     / ____/___ ______/ /____  _____
 | | /| / / / / / / __ ` + "`" + `/ __ ` + "`" + `__ \   / /   / __ ` + "`" + `/ ___/ __/ _ \/ ___/
@@ -105,50 +105,52 @@ func main() {
 |__/|__/_/_/_/_/\__,_/_/ /_/ /_/   \____/\__,_/_/   \__/\___/_/     
                                                                     
             `
+	}
+
+	// Process the text to preserve whitespace and line breaks
+	lines := strings.Split(text, "\n")
+	processedText := ""
+	for i, line := range lines {
+		line = strings.ReplaceAll(line, " ", "&#160;")
+		if i > 0 {
+			processedText += "<tspan x=\"10\" dy=\"1.2em\">" + line + "</tspan>"
+		} else {
+			processedText += line
 		}
+	}
 
-		// Process the text to preserve whitespace and line breaks
-		lines := strings.Split(text, "\n")
-		processedText := ""
-		for i, line := range lines {
-			line = strings.ReplaceAll(line, " ", "&#160;")
-			if i > 0 {
-				processedText += "<tspan x=\"10\" dy=\"1.2em\">" + line + "</tspan>"
-			} else {
-				processedText += line
-			}
-		}
+	backgroundColor := r.URL.Query().Get("background_color")
+	if backgroundColor == "" {
+		backgroundColor = "323f26"
+	}
 
-		backgroundColor := r.URL.Query().Get("background_color")
-		if backgroundColor == "" {
-			backgroundColor = "323f26"
-		}
+	textColor := r.URL.Query().Get("text_color")
+	if textColor == "" {
+		textColor = "F69525"
+	}
 
-		textColor := r.URL.Query().Get("text_color")
-		if textColor == "" {
-			textColor = "F69525"
-		}
+	data := SVGData{
+		Text:            template.HTML(processedText),
+		BackgroundColor: backgroundColor,
+		TextColor:       textColor,
+	}
 
-		data := SVGData{
-			Text:            template.HTML(processedText),
-			BackgroundColor: backgroundColor,
-			TextColor:       textColor,
-		}
+	w.Header().Set("Content-Type", "image/svg+xml")
+	w.Header().Set("Cache-Control", "public, max-age=86400")
 
-		w.Header().Set("Content-Type", "image/svg+xml")
-		w.Header().Set("Cache-Control", "public, max-age=86400")
+	err = tmpl.Execute(w, data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
 
-		err := tmpl.Execute(w, data)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-	})
-
+func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
+	http.HandleFunc("/", Handler)
 	fmt.Printf("Server is running on http://localhost:%s\n", port)
 	http.ListenAndServe(":"+port, nil)
 }
