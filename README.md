@@ -1,7 +1,12 @@
-# Will Carter
-Software developer working on Web & ML Projects
+[![profile-terminal](https://profile-terminal-go.vercel.app)](https://williamcarter.dev)
 
-**Current Project:** [zfetch](https://github.com/WilliamHCarter/zfetch)
+`Software developer working on Web & ML projects`
+
+### Current Project:
+
+<a href="https://github.com/WilliamHCarter/zfetch">
+  <img src="https://raw.githubusercontent.com/WilliamHCarter/zfetch/main/readme-header.svg" alt="zfetch" height="35">
+</a>
 
 
 
