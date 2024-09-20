@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 	"strings"
@@ -117,6 +118,13 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	asciiBox := createASCIIBox("Info", "Lorem ipsum dolor sit amet", "Consectetur adipiscing elit", "Sed do eiusmod tempor incididunt")
+	asciiBoxLines := strings.Split(asciiBox, "\n")
+	for _, line := range asciiBoxLines {
+		line = strings.ReplaceAll(line, " ", "&#160;")
+		processedText += "<tspan x=\"10\" dy=\"1.2em\">" + line + "</tspan>"
+	}
+
 	backgroundColor := r.URL.Query().Get("background_color")
 	if backgroundColor == "" {
 		backgroundColor = "323f26"
@@ -141,4 +149,24 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+}
+
+func createASCIIBox(title, line1, line2, line3 string) string {
+	boxWidth := 50
+	titlePadding := (boxWidth - len(title) - 2) / 2
+	line1Padding := boxWidth - len(line1) - 4
+	line2Padding := boxWidth - len(line2) - 4
+	line3Padding := boxWidth - len(line3) - 4
+
+	return fmt.Sprintf(`
+    ┌%s %s %s┐
+    │ %s%s │
+    │ %s%s │
+    │ %s%s │
+    └%s┘`,
+		strings.Repeat("─", titlePadding), title, strings.Repeat("─", boxWidth-titlePadding-len(title)-2),
+		line1, strings.Repeat(" ", line1Padding),
+		line2, strings.Repeat(" ", line2Padding),
+		line3, strings.Repeat(" ", line3Padding),
+		strings.Repeat("─", boxWidth-2))
 }
