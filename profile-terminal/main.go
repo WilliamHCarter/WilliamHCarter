@@ -72,8 +72,10 @@ const svgTemplate = `<svg width="400" height="200" xmlns="http://www.w3.org/2000
     
     <g clip-path="url(#rounded-corners)">
         <!-- ASCII Art Text layer -->
-        <text x="10" y="60" class="text" xml:space="preserve">{{.Text}}</text>
+        <text x="10" y="60" class="text" text-anchor="middle" xml:space="preserve">{{.Text}}</text>
 
+        <!-- Info Box Text layer -->
+        <text x="10" y="160" class="text" text-anchor="middle" xml:space="preserve">{{.InfoText}}</text>
         <!-- CRT overlay -->
         <rect width="100%" height="100%" fill="url(#crtPattern)" style="mix-blend-mode: overlay;"/>
 
@@ -83,6 +85,7 @@ const svgTemplate = `<svg width="400" height="200" xmlns="http://www.w3.org/2000
 
 type SVGData struct {
 	Text            template.HTML
+	InfoText        template.HTML
 	BackgroundColor string
 	TextColor       string
 }
@@ -119,10 +122,11 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	asciiBox := createASCIIBox("Info", "Lorem ipsum dolor sit amet", "Consectetur adipiscing elit", "Sed do eiusmod tempor incididunt")
+	processedInfoBox := ""
 	asciiBoxLines := strings.Split(asciiBox, "\n")
 	for _, line := range asciiBoxLines {
 		line = strings.ReplaceAll(line, " ", "&#160;")
-		processedText += "<tspan x=\"10\" dy=\"1.2em\">" + line + "</tspan>"
+		processedInfoBox += "<tspan x=\"10\" dy=\"1.2em\">" + line + "</tspan>"
 	}
 
 	backgroundColor := r.URL.Query().Get("background_color")
@@ -137,6 +141,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 	data := SVGData{
 		Text:            template.HTML(processedText),
+		InfoText:        template.HTML(processedInfoBox),
 		BackgroundColor: backgroundColor,
 		TextColor:       textColor,
 	}
@@ -154,9 +159,9 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 func createASCIIBox(title, line1, line2, line3 string) string {
 	boxWidth := 50
 	titlePadding := (boxWidth - len(title) - 2) / 2
-	line1Padding := boxWidth - len(line1) - 4
-	line2Padding := boxWidth - len(line2) - 4
-	line3Padding := boxWidth - len(line3) - 4
+	line1Padding := boxWidth - len(line1) - 2
+	line2Padding := boxWidth - len(line2) - 2
+	line3Padding := boxWidth - len(line3) - 2
 
 	return fmt.Sprintf(`
     ┌%s %s %s┐
@@ -168,5 +173,5 @@ func createASCIIBox(title, line1, line2, line3 string) string {
 		line1, strings.Repeat(" ", line1Padding),
 		line2, strings.Repeat(" ", line2Padding),
 		line3, strings.Repeat(" ", line3Padding),
-		strings.Repeat("─", boxWidth-2))
+		strings.Repeat("─", boxWidth))
 }
