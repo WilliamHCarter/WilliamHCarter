@@ -1,4 +1,4 @@
-[![profile-terminal](https://profile-terminal-go.vercel.app)](https://williamcarter.dev)
+<img src="https://profile-terminal-go.vercel.app" alt="profile-terminal" width="10000">
 
 `Software developer working on Web & ML projects`
 

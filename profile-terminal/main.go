@@ -1,10 +1,13 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"net/http"
 	"strings"
+	"sync"
+	"time"
 )
 
 const svgTemplate = `<svg width="400" height="200" xmlns="http://www.w3.org/2000/svg">
@@ -72,10 +75,10 @@ const svgTemplate = `<svg width="400" height="200" xmlns="http://www.w3.org/2000
     
     <g clip-path="url(#rounded-corners)">
         <!-- ASCII Art Text layer -->
-        <text x="10" y="60" class="text" text-anchor="middle" xml:space="preserve">{{.Text}}</text>
+        <text x="50%" y="60" class="text" text-anchor="middle" xml:space="preserve">{{.Text}}</text>
 
         <!-- Info Box Text layer -->
-        <text x="10" y="160" class="text" text-anchor="middle" xml:space="preserve">{{.InfoText}}</text>
+        <text x="50%" y="160" class="text" text-anchor="middle" xml:space="preserve">{{.InfoText}}</text>
         <!-- CRT overlay -->
         <rect width="100%" height="100%" fill="url(#crtPattern)" style="mix-blend-mode: overlay;"/>
 
@@ -88,6 +91,38 @@ type SVGData struct {
 	InfoText        template.HTML
 	BackgroundColor string
 	TextColor       string
+}
+
+type LanguageStats struct {
+	Name       string
+	Percentage float64
+}
+
+var (
+	cachedCommitCount int
+	commitCountMutex  sync.RWMutex
+	updateOnce        sync.Once
+)
+
+func init() {
+	updateOnce.Do(func() {
+		go updateCommitCountDaily()
+	})
+}
+
+func updateCommitCountDaily() {
+	ticker := time.NewTicker(24 * time.Hour)
+	defer ticker.Stop()
+
+	for {
+		count, err := getTotalCommits("WilliamHCarter")
+		if err == nil {
+			commitCountMutex.Lock()
+			cachedCommitCount = count
+			commitCountMutex.Unlock()
+		}
+		<-ticker.C
+	}
 }
 
 func Handler(w http.ResponseWriter, r *http.Request) {
@@ -115,18 +150,23 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	for i, line := range lines {
 		line = strings.ReplaceAll(line, " ", "&#160;")
 		if i > 0 {
-			processedText += "<tspan x=\"10\" dy=\"1.2em\">" + line + "</tspan>"
+			processedText += "<tspan x=\"50%\" dy=\"1.2em\">" + line + "</tspan>"
 		} else {
 			processedText += line
 		}
 	}
 
-	asciiBox := createASCIIBox("Info", "Lorem ipsum dolor sit amet", "Consectetur adipiscing elit", "Sed do eiusmod tempor incididunt")
+	commitCountMutex.RLock()
+	totalCommits := cachedCommitCount
+	commitCountMutex.RUnlock()
+	commitsLine := fmt.Sprintf("Total Commits: %d", totalCommits)
+
+	asciiBox := createASCIIBox("Info", commitsLine, "Lorem ipsum dolor sit amet", "Consectetur adipiscing elit", "Sed do eiusmod tempor incididunt")
 	processedInfoBox := ""
 	asciiBoxLines := strings.Split(asciiBox, "\n")
 	for _, line := range asciiBoxLines {
 		line = strings.ReplaceAll(line, " ", "&#160;")
-		processedInfoBox += "<tspan x=\"10\" dy=\"1.2em\">" + line + "</tspan>"
+		processedInfoBox += "<tspan x=\"50%\" dy=\"1.2em\">" + line + "</tspan>"
 	}
 
 	backgroundColor := r.URL.Query().Get("background_color")
@@ -156,15 +196,17 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func createASCIIBox(title, line1, line2, line3 string) string {
+func createASCIIBox(title, line1, line2, line3, line4 string) string {
 	boxWidth := 50
 	titlePadding := (boxWidth - len(title) - 2) / 2
 	line1Padding := boxWidth - len(line1) - 2
 	line2Padding := boxWidth - len(line2) - 2
 	line3Padding := boxWidth - len(line3) - 2
+	line4Padding := boxWidth - len(line4) - 2
 
 	return fmt.Sprintf(`
     ┌%s %s %s┐
+    │ %s%s │
     │ %s%s │
     │ %s%s │
     │ %s%s │
@@ -173,5 +215,59 @@ func createASCIIBox(title, line1, line2, line3 string) string {
 		line1, strings.Repeat(" ", line1Padding),
 		line2, strings.Repeat(" ", line2Padding),
 		line3, strings.Repeat(" ", line3Padding),
+		line4, strings.Repeat(" ", line4Padding),
 		strings.Repeat("─", boxWidth))
+}
+
+// =========================== Queries ===========================
+type ContributionsResponse struct {
+	TotalContributions int `json:"total_contributions"`
+}
+
+func getTotalCommits(username string) (int, error) {
+	url := "https://api.github.com/graphql"
+
+	query := fmt.Sprintf(`
+	{
+		"query": "query {
+			user(login:\"%s\") {
+				contributionsCollection {
+					contributionCalendar {
+						totalContributions
+					}
+				}
+			}
+		}"
+	}`, username)
+
+	req, err := http.NewRequest("POST", url, strings.NewReader(query))
+	if err != nil {
+		return 0, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer YOUR_GITHUB_PERSONAL_ACCESS_TOKEN")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return 0, err
+	}
+	defer resp.Body.Close()
+
+	var result struct {
+		Data struct {
+			User struct {
+				ContributionsCollection struct {
+					ContributionCalendar ContributionsResponse `json:"contributionCalendar"`
+				} `json:"contributionsCollection"`
+			} `json:"user"`
+		} `json:"data"`
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return 0, err
+	}
+
+	return result.Data.User.ContributionsCollection.ContributionCalendar.TotalContributions, nil
 }
