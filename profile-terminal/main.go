@@ -226,14 +226,10 @@ func createASCIIBox(title, line1, line2, line3, line4 string) string {
 }
 
 // =========================== Queries ===========================
-type ContributionsResponse struct {
-	TotalContributions int `json:"total_contributions"`
-}
-
 func getTotalCommits(username string) (int, error) {
 	logger.Printf("Fetching commit count for user: %s\n", username)
 
-	url := fmt.Sprintf("https://api.github.com/users/%s/events/public", username)
+	url := fmt.Sprintf("https://api.github.com/search/commits?q=author:%s", username)
 
 	client := &http.Client{Timeout: 10 * time.Second}
 	req, err := http.NewRequest("GET", url, nil)
@@ -243,6 +239,7 @@ func getTotalCommits(username string) (int, error) {
 	}
 
 	req.Header.Set("User-Agent", "GetCommitsAgent")
+	req.Header.Set("Accept", "application/vnd.github.cloak-preview")
 
 	logger.Println("Sending request to GitHub API...")
 	resp, err := client.Do(req)
@@ -257,25 +254,15 @@ func getTotalCommits(username string) (int, error) {
 		return 0, fmt.Errorf("API request failed with status code: %d", resp.StatusCode)
 	}
 
-	var events []struct {
-		Type    string `json:"type"`
-		Payload struct {
-			Commits []struct{} `json:"commits"`
-		} `json:"payload"`
+	var result struct {
+		TotalCount int `json:"total_count"`
 	}
 
-	if err := json.NewDecoder(resp.Body).Decode(&events); err != nil {
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		logger.Printf("Error decoding response: %v\n", err)
 		return 0, err
 	}
 
-	totalCommits := 0
-	for _, event := range events {
-		if event.Type == "PushEvent" {
-			totalCommits += len(event.Payload.Commits)
-		}
-	}
-
-	logger.Printf("Total commits counted: %d\n", totalCommits)
-	return totalCommits, nil
+	logger.Printf("Total commits counted: %d\n", result.TotalCount)
+	return result.TotalCount, nil
 }
