@@ -225,49 +225,43 @@ type ContributionsResponse struct {
 }
 
 func getTotalCommits(username string) (int, error) {
-	url := "https://api.github.com/graphql"
+	url := fmt.Sprintf("https://api.github.com/users/%s/events/public", username)
 
-	query := fmt.Sprintf(`
-	{
-		"query": "query {
-			user(login:\"%s\") {
-				contributionsCollection {
-					contributionCalendar {
-						totalContributions
-					}
-				}
-			}
-		}"
-	}`, username)
-
-	req, err := http.NewRequest("POST", url, strings.NewReader(query))
+	client := &http.Client{Timeout: 10 * time.Second}
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return 0, err
 	}
 
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer YOUR_GITHUB_PERSONAL_ACCESS_TOKEN")
+	req.Header.Set("User-Agent", "GetCommitsAgent")
 
-	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
 		return 0, err
 	}
 	defer resp.Body.Close()
 
-	var result struct {
-		Data struct {
-			User struct {
-				ContributionsCollection struct {
-					ContributionCalendar ContributionsResponse `json:"contributionCalendar"`
-				} `json:"contributionsCollection"`
-			} `json:"user"`
-		} `json:"data"`
+	if resp.StatusCode != http.StatusOK {
+		return 0, fmt.Errorf("API request failed with status code: %d", resp.StatusCode)
 	}
 
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+	var events []struct {
+		Type    string `json:"type"`
+		Payload struct {
+			Commits []struct{} `json:"commits"`
+		} `json:"payload"`
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(&events); err != nil {
 		return 0, err
 	}
 
-	return result.Data.User.ContributionsCollection.ContributionCalendar.TotalContributions, nil
+	totalCommits := 0
+	for _, event := range events {
+		if event.Type == "PushEvent" {
+			totalCommits += len(event.Payload.Commits)
+		}
+	}
+
+	return totalCommits, nil
 }
