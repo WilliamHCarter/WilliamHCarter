@@ -102,41 +102,36 @@ type LanguageStats struct {
 
 var (
 	cachedCommitCount int
-	commitCountMutex  sync.RWMutex
-	updateOnce        sync.Once
+	lastUpdateTime    time.Time
+	mutex             sync.Mutex
 	logger            *log.Logger
 )
 
 func init() {
 	logger = log.New(os.Stdout, "", log.Ldate|log.Ltime)
-	logger.Println("Handler package initialized")
-
-	updateOnce.Do(func() {
-		go updateCommitCountDaily()
-	})
-}
-
-func updateCommitCountDaily() {
-	ticker := time.NewTicker(24 * time.Hour)
-	defer ticker.Stop()
-
-	for {
-		logger.Println("Updating commit count...")
-		count, err := getTotalCommits("WilliamHCarter")
-		if err == nil {
-			commitCountMutex.Lock()
-			cachedCommitCount = count
-			commitCountMutex.Unlock()
-			logger.Printf("Commit count updated successfully: %d\n", count)
-		} else {
-			logger.Printf("Error updating commit count: %v\n", err)
-		}
-		<-ticker.C
-	}
 }
 
 func Handler(w http.ResponseWriter, r *http.Request) {
 	logger.Println("Handler function called")
+
+	mutex.Lock()
+	defer mutex.Unlock()
+
+	if time.Since(lastUpdateTime) > 24*time.Hour {
+		logger.Println("Updating commit count...")
+		count, err := getTotalCommits("WilliamHCarter")
+		if err == nil {
+			cachedCommitCount = count
+			lastUpdateTime = time.Now()
+			logger.Printf("Commit count updated successfully: %d\n", count)
+		} else {
+			logger.Printf("Error updating commit count: %v\n", err)
+		}
+	} else {
+		logger.Println("Using cached commit count")
+	}
+
+	logger.Printf("Current commit count: %d\n", cachedCommitCount)
 
 	tmpl, err := template.New("svg").Parse(svgTemplate)
 	if err != nil {
@@ -169,11 +164,8 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	commitCountMutex.RLock()
-	totalCommits := cachedCommitCount
-	commitCountMutex.RUnlock()
-	commitsLine := fmt.Sprintf("Total Commits: %d", totalCommits)
-	logger.Printf("Current cached commit count: %d\n", totalCommits)
+	commitsLine := fmt.Sprintf("Total Commits: %d", cachedCommitCount)
+	logger.Printf("Current cached commit count: %d\n", cachedCommitCount)
 
 	asciiBox := createASCIIBox("Info", commitsLine, "Lorem ipsum dolor sit amet", "Consectetur adipiscing elit", "Sed do eiusmod tempor incididunt")
 	processedInfoBox := ""
