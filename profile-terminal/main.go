@@ -4,13 +4,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
+	"os"
 	"strings"
 	"sync"
 	"time"
 )
 
-const svgTemplate = `<svg width="400" height="200" xmlns="http://www.w3.org/2000/svg">
+const svgTemplate = `<svg width="400" height="250" xmlns="http://www.w3.org/2000/svg">
     <defs>
         <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
             <feFlood result="flood" flood-color="#{{.TextColor}}" flood-opacity=".4"/>
@@ -78,7 +80,7 @@ const svgTemplate = `<svg width="400" height="200" xmlns="http://www.w3.org/2000
         <text x="50%" y="60" class="text" text-anchor="middle" xml:space="preserve">{{.Text}}</text>
 
         <!-- Info Box Text layer -->
-        <text x="50%" y="160" class="text" text-anchor="middle" xml:space="preserve">{{.InfoText}}</text>
+        <text x="50%" y="140" class="text" text-anchor="middle" xml:space="preserve">{{.InfoText}}</text>
         <!-- CRT overlay -->
         <rect width="100%" height="100%" fill="url(#crtPattern)" style="mix-blend-mode: overlay;"/>
 
@@ -102,9 +104,13 @@ var (
 	cachedCommitCount int
 	commitCountMutex  sync.RWMutex
 	updateOnce        sync.Once
+	logger            *log.Logger
 )
 
 func init() {
+	logger = log.New(os.Stdout, "", log.Ldate|log.Ltime)
+	logger.Println("Handler package initialized")
+
 	updateOnce.Do(func() {
 		go updateCommitCountDaily()
 	})
@@ -115,19 +121,26 @@ func updateCommitCountDaily() {
 	defer ticker.Stop()
 
 	for {
+		logger.Println("Updating commit count...")
 		count, err := getTotalCommits("WilliamHCarter")
 		if err == nil {
 			commitCountMutex.Lock()
 			cachedCommitCount = count
 			commitCountMutex.Unlock()
+			logger.Printf("Commit count updated successfully: %d\n", count)
+		} else {
+			logger.Printf("Error updating commit count: %v\n", err)
 		}
 		<-ticker.C
 	}
 }
 
 func Handler(w http.ResponseWriter, r *http.Request) {
+	logger.Println("Handler function called")
+
 	tmpl, err := template.New("svg").Parse(svgTemplate)
 	if err != nil {
+		logger.Printf("Error parsing SVG template: %v\n", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -160,6 +173,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	totalCommits := cachedCommitCount
 	commitCountMutex.RUnlock()
 	commitsLine := fmt.Sprintf("Total Commits: %d", totalCommits)
+	logger.Printf("Current cached commit count: %d\n", totalCommits)
 
 	asciiBox := createASCIIBox("Info", commitsLine, "Lorem ipsum dolor sit amet", "Consectetur adipiscing elit", "Sed do eiusmod tempor incididunt")
 	processedInfoBox := ""
@@ -225,23 +239,29 @@ type ContributionsResponse struct {
 }
 
 func getTotalCommits(username string) (int, error) {
+	logger.Printf("Fetching commit count for user: %s\n", username)
+
 	url := fmt.Sprintf("https://api.github.com/users/%s/events/public", username)
 
 	client := &http.Client{Timeout: 10 * time.Second}
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
+		logger.Printf("Error creating request: %v\n", err)
 		return 0, err
 	}
 
 	req.Header.Set("User-Agent", "GetCommitsAgent")
 
+	logger.Println("Sending request to GitHub API...")
 	resp, err := client.Do(req)
 	if err != nil {
+		logger.Printf("Error sending request: %v\n", err)
 		return 0, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
+		logger.Printf("API request failed with status code: %d\n", resp.StatusCode)
 		return 0, fmt.Errorf("API request failed with status code: %d", resp.StatusCode)
 	}
 
@@ -253,6 +273,7 @@ func getTotalCommits(username string) (int, error) {
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&events); err != nil {
+		logger.Printf("Error decoding response: %v\n", err)
 		return 0, err
 	}
 
@@ -263,5 +284,6 @@ func getTotalCommits(username string) (int, error) {
 		}
 	}
 
+	logger.Printf("Total commits counted: %d\n", totalCommits)
 	return totalCommits, nil
 }
