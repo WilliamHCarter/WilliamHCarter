@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-const svgTemplate = `<svg width="400" height="250" xmlns="http://www.w3.org/2000/svg">
+const svgTemplate = `<svg width="400" height="280" xmlns="http://www.w3.org/2000/svg">
     <defs>
         <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
             <feFlood result="flood" flood-color="#{{.TextColor}}" flood-opacity=".4"/>
@@ -81,16 +81,29 @@ const svgTemplate = `<svg width="400" height="250" xmlns="http://www.w3.org/2000
 
         <!-- Info Box Text layer -->
         <text x="50%" y="140" class="text" text-anchor="middle" xml:space="preserve">{{.InfoText}}</text>
+
+		<!-- Project Box Text layer -->]
+		<text x="50%" y="210" class="text" text-anchor="middle" xml:space="preserve">{{.ProjectText}}</text>
+
         <!-- CRT overlay -->
         <rect width="100%" height="100%" fill="url(#crtPattern)" style="mix-blend-mode: overlay;"/>
 
         <!-- Scanline effect -->
         <rect class="scanline" x="0" y="0" width="400" height="50" fill="url(#scanlineGradient)" style="mix-blend-mode: overlay;"/>
-    </g></svg>`
+    </g>
+	<script type="text/javascript">
+		<![CDATA[
+			function visit(url) {
+				window.top.location.href = url;
+			}
+		]]>
+	</script>
+	</svg>`
 
 type SVGData struct {
 	Text            template.HTML
 	InfoText        template.HTML
+	ProjectText     template.HTML
 	BackgroundColor string
 	TextColor       string
 }
@@ -167,13 +180,15 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	commitsLine := fmt.Sprintf("Total Commits: %d", cachedCommitCount)
 	logger.Printf("Current cached commit count: %d\n", cachedCommitCount)
 
-	asciiBox := createASCIIBox("Info", commitsLine, "Lorem ipsum dolor sit amet", "Consectetur adipiscing elit", "Sed do eiusmod tempor incididunt")
+	infoBox := createInfoBox("Info", commitsLine, "Lorem ipsum dolor sit amet", "Consectetur adipiscing elit", "Sed do eiusmod tempor incididunt")
 	processedInfoBox := ""
-	asciiBoxLines := strings.Split(asciiBox, "\n")
-	for _, line := range asciiBoxLines {
+	infoBoxLines := strings.Split(infoBox, "\n")
+	for _, line := range infoBoxLines {
 		line = strings.ReplaceAll(line, " ", "&#160;")
 		processedInfoBox += "<tspan x=\"50%\" dy=\"1.2em\">" + line + "</tspan>"
 	}
+
+	projectBox := createProjectBox()
 
 	backgroundColor := r.URL.Query().Get("background_color")
 	if backgroundColor == "" {
@@ -188,6 +203,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	data := SVGData{
 		Text:            template.HTML(processedText),
 		InfoText:        template.HTML(processedInfoBox),
+		ProjectText:     template.HTML(projectBox),
 		BackgroundColor: backgroundColor,
 		TextColor:       textColor,
 	}
@@ -202,7 +218,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func createASCIIBox(title, line1, line2, line3, line4 string) string {
+func createInfoBox(title, line1, line2, line3, line4 string) string {
 	boxWidth := 50
 	titlePadding := (boxWidth - len(title) - 2) / 2
 	line1Padding := boxWidth - len(line1) - 2
@@ -223,6 +239,15 @@ func createASCIIBox(title, line1, line2, line3, line4 string) string {
 		line3, strings.Repeat(" ", line3Padding),
 		line4, strings.Repeat(" ", line4Padding),
 		strings.Repeat("─", boxWidth))
+}
+
+func createProjectBox() string {
+	return fmt.Sprintf(`
+┌─────── Projects ───────┐
+<a onclick="visit('https://github.com/williamhcarter/zfetch')"><tspan class="project-line"><tspan class="bg" fill="none">│ %-24s │</tspan><tspan class="fg" fill="#58a6ff">│ %-24s │</tspan></tspan></a>
+<a onclick="visit('https://github.com/williamhcarter/rattlesnakeridge')"><tspan class="project-line"><tspan class="bg" fill="none">│ %-24s │</tspan><tspan class="fg" fill="#58a6ff">│ %-24s │</tspan></tspan></a>
+<a onclick="visit('https://github.com/williamhcarter/lyremusicplayer')"><tspan class="project-line"><tspan class="bg" fill="none">│ %-24s │</tspan><tspan class="fg" fill="#58a6ff">│ %-24s │</tspan></tspan></a>
+└──────────────────────┘`, "zfetch", "zfetch", "Rattlesnake Ridge", "Rattlesnake Ridg", "Lyre Music Player", "Lyre Music Player")
 }
 
 // =========================== Queries ===========================
