@@ -83,7 +83,7 @@ const svgTemplate = `<svg width="400" height="280" xmlns="http://www.w3.org/2000
         <text x="50%" y="140" class="text" text-anchor="middle" xml:space="preserve">{{.InfoText}}</text>
 
 		<!-- Project Box Text layer -->]
-		<text x="50%" y="210" class="text" text-anchor="middle" xml:space="preserve">{{.ProjectText}}</text>
+		<text x="50%" y="210" text-anchor="middle" xml:space="preserve">{{.ProjectText}}</text>
 
         <!-- CRT overlay -->
         <rect width="100%" height="100%" fill="url(#crtPattern)" style="mix-blend-mode: overlay; pointer-events: none;"/>
@@ -252,7 +252,11 @@ func createProjectBox(title string, lines []string, links []string) string {
 	paddedLines := make([]string, len(lines))
 	for i, line := range lines {
 		linePadding := boxWidth - len(line) - 2
-		paddedLines[i] = fmt.Sprintf("%s%s │", line, strings.Repeat(" ", linePadding))
+		if i == 0 {
+			paddedLines[i] = fmt.Sprintf("| %s%s │", line, strings.Repeat(" ", linePadding))
+		} else {
+			paddedLines[i] = fmt.Sprintf(" %s%s │", line, strings.Repeat(" ", linePadding))
+		}
 	}
 
 	infoBox := fmt.Sprintf(`┌%s %s %s┐
@@ -268,9 +272,11 @@ func createProjectBox(title string, lines []string, links []string) string {
 	for i, line := range infoBoxLines {
 		line = strings.ReplaceAll(line, " ", "&#160;")
 		if i > 0 && i <= len(lines) {
-			line = fmt.Sprintf("<a xlink:href=\"%s\" class=\"fill: #F69525\">%s</a>", links[i-1], line)
+			line = fmt.Sprintf("<a xlink:href=\"%s\" class=\"text\">%s</a>", links[i-1], line)
+			processedInfoBox += "<tspan x=\"50%\" dy=\"1.2em\">" + line + "</tspan>"
+		} else {
+			processedInfoBox += "<tspan x=\"50%\" dy=\"1.2em\" class=\"text\">" + line + "</tspan>"
 		}
-		processedInfoBox += "<tspan x=\"50%\" dy=\"1.2em\">" + line + "</tspan>"
 	}
 	return processedInfoBox
 }
