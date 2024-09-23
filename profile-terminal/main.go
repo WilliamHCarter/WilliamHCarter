@@ -479,7 +479,7 @@ func GetTopThreeLanguages(username string) ([]string, error) {
 		languageLines[i] = fmt.Sprintf("%s: %.2f%%", lang.Name, lang.Percentage)
 	}
 
-	return languageLines, nil
+	return addBarChart(languages), nil
 }
 
 func contains(slice []string, item string) bool {
@@ -489,4 +489,32 @@ func contains(slice []string, item string) bool {
 		}
 	}
 	return false
+}
+
+func addBarChart(languages []Language) []string {
+	const totalBarLength = 20
+	const solidBlock = "█"
+	const ditheredBlock = "▒"
+
+	maxNameLength := 0
+	for _, lang := range languages {
+		if len(lang.Name) > maxNameLength {
+			maxNameLength = len(lang.Name)
+		}
+	}
+
+	var chartLines []string
+	for _, lang := range languages {
+		solidBlocks := int(lang.Percentage / 100 * float64(totalBarLength))
+		ditheredBlocks := 1
+
+		bar := strings.Repeat(solidBlock, solidBlocks) + strings.Repeat(ditheredBlock, ditheredBlocks)
+
+		bar = bar + strings.Repeat(" ", totalBarLength-len(bar))
+
+		line := fmt.Sprintf("%-*s %s %.2f%%", maxNameLength, lang.Name, bar, lang.Percentage)
+		chartLines = append(chartLines, line)
+	}
+
+	return chartLines
 }
