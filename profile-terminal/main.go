@@ -494,8 +494,8 @@ func contains(slice []string, item string) bool {
 
 func addBarChart(languages []Language) []string {
 	const totalBarLength = 20
-	const solidBlock = "█"
-	const ditheredBlock = "▒"
+	const fullBlock = "#"
+	const emptyBlock = "-"
 
 	maxNameLength := 0
 	for _, lang := range languages {
@@ -511,20 +511,15 @@ func addBarChart(languages []Language) []string {
 		log.Printf("Language: %s, Percentage: %.2f%%, Solid blocks: %d", lang.Name, lang.Percentage, solidBlocks)
 
 		bar := make([]byte, totalBarLength)
-
-		for i := 0; i < solidBlocks && i < totalBarLength; i++ {
-			bar[i] = solidBlock[0]
+		for i := 0; i < totalBarLength; i++ {
+			if i < solidBlocks {
+				bar[i] = fullBlock[0]
+			} else {
+				bar[i] = emptyBlock[0]
+			}
 		}
 
-		if solidBlocks < totalBarLength {
-			bar[solidBlocks] = ditheredBlock[0]
-		}
-
-		for i := solidBlocks + 1; i < totalBarLength; i++ {
-			bar[i] = ' '
-		}
-
-		line := fmt.Sprintf("%-*s %s %.2f%%", maxNameLength, lang.Name, string(bar), lang.Percentage)
+		line := fmt.Sprintf("%-*s [%s] %.2f%%", maxNameLength, lang.Name, string(bar), lang.Percentage)
 		log.Printf("Formatted line: %s", line)
 		chartLines = append(chartLines, line)
 	}
