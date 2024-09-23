@@ -519,7 +519,7 @@ func addBarChart(languages []Language) []string {
 			}
 		}
 
-		line := fmt.Sprintf("%-*s [%s] %.2f%%", maxNameLength, lang.Name, string(bar), lang.Percentage)
+		line := fmt.Sprintf("  %-*s [%s] %.2f%%", maxNameLength, lang.Name, string(bar), lang.Percentage)
 		log.Printf("Formatted line: %s", line)
 		chartLines = append(chartLines, line)
 	}
