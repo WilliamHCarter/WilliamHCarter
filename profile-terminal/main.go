@@ -86,10 +86,10 @@ const svgTemplate = `<svg width="400" height="280" xmlns="http://www.w3.org/2000
 		<text x="50%" y="210" class="text" text-anchor="middle" xml:space="preserve">{{.ProjectText}}</text>
 
         <!-- CRT overlay -->
-        <rect width="100%" height="100%" fill="url(#crtPattern)" style="mix-blend-mode: overlay;"/>
+        <rect width="100%" height="100%" fill="url(#crtPattern)" style="mix-blend-mode: overlay; pointer-events: none;"/>
 
         <!-- Scanline effect -->
-        <rect class="scanline" x="0" y="0" width="400" height="50" fill="url(#scanlineGradient)" style="mix-blend-mode: overlay;"/>
+        <rect class="scanline" x="0" y="0" width="400" height="50" fill="url(#scanlineGradient)" style="mix-blend-mode: overlay; pointer-events: none;"/>
     </g>
 	<script type="text/javascript">
 		<![CDATA[
@@ -248,14 +248,14 @@ func createProjectBox(title string, lines []string, links []string) string {
 	paddedLines := make([]string, len(lines))
 	for i, line := range lines {
 		linePadding := boxWidth - len(line) - 2
-		paddedLines[i] = fmt.Sprintf(" %s%s │", line, strings.Repeat(" ", linePadding))
+		paddedLines[i] = fmt.Sprintf("│ %s%s │", line, strings.Repeat(" ", linePadding))
 	}
 
 	infoBox := fmt.Sprintf(`┌%s %s %s┐
 %s
 └%s┘`,
 		strings.Repeat("─", titlePadding), title, strings.Repeat("─", boxWidth-titlePadding-len(title)-2),
-		strings.Join(paddedLines, "\n│"),
+		strings.Join(paddedLines, "\n"),
 		strings.Repeat("─", boxWidth))
 
 	processedInfoBox := ""
@@ -264,9 +264,9 @@ func createProjectBox(title string, lines []string, links []string) string {
 	for i, line := range infoBoxLines {
 		line = strings.ReplaceAll(line, " ", "&#160;")
 		if i > 0 && i <= len(lines) {
-			line = fmt.Sprintf("<a xlink:href=\"%s\">%s</a>", links[i-1], line)
+			line = fmt.Sprintf("<a xlink:href=\"%s\" class=\"text\">%s</a>", links[i-1], line)
 		}
-		processedInfoBox += "<tspan x=\"50%\" dy=\"1.2em\">" + line + "</tspan>"
+		processedInfoBox += line
 	}
 	return processedInfoBox
 }
