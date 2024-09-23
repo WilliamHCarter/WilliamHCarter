@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	"math"
 	"net/http"
 	"os"
 	"sort"
@@ -502,18 +503,31 @@ func addBarChart(languages []Language) []string {
 			maxNameLength = len(lang.Name)
 		}
 	}
+	log.Printf("Max name length: %d", maxNameLength)
 
 	var chartLines []string
 	for _, lang := range languages {
-		solidBlocks := int(lang.Percentage / 100 * float64(totalBarLength))
-		ditheredBlocks := 1
+		solidBlocks := int(math.Max(0, math.Floor(lang.Percentage/100*float64(totalBarLength))))
+		log.Printf("Language: %s, Percentage: %.2f%%, Solid blocks: %d", lang.Name, lang.Percentage, solidBlocks)
 
-		bar := strings.Repeat(solidBlock, solidBlocks) + strings.Repeat(ditheredBlock, ditheredBlocks)
+		if solidBlocks == 0 {
+			ditheredBlocks := 1
+			bar := strings.Repeat(ditheredBlock, ditheredBlocks)
+			bar = bar + strings.Repeat(" ", totalBarLength-ditheredBlocks)
+			line := fmt.Sprintf("%-*s %s %.2f%%", maxNameLength, lang.Name, bar, lang.Percentage)
+			chartLines = append(chartLines, line)
+		} else {
+			ditheredBlocks := 0
+			if solidBlocks < totalBarLength {
+				ditheredBlocks = 1
+			}
 
-		bar = bar + strings.Repeat(" ", totalBarLength-len(bar))
-
-		line := fmt.Sprintf("%-*s %s %.2f%%", maxNameLength, lang.Name, bar, lang.Percentage)
-		chartLines = append(chartLines, line)
+			bar := strings.Repeat(solidBlock, solidBlocks) + strings.Repeat(ditheredBlock, ditheredBlocks)
+			bar = bar + strings.Repeat(" ", totalBarLength-len(bar))
+			line := fmt.Sprintf("%-*s %s %.2f%%", maxNameLength, lang.Name, bar, lang.Percentage)
+			log.Printf("Formatted line: %s", line)
+			chartLines = append(chartLines, line)
+		}
 	}
 
 	return chartLines
