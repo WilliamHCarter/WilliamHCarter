@@ -394,6 +394,7 @@ type GraphQLResponse struct {
 }
 
 func GetTopThreeLanguages(username string) ([]string, error) {
+	excludeLanguages := []string{"C#", "ShaderLab"}
 	url := "https://api.github.com/graphql"
 	query := fmt.Sprintf(`
 	{
@@ -453,11 +454,12 @@ func GetTopThreeLanguages(username string) ([]string, error) {
 
 	for _, repo := range result.Data.User.Repositories.Nodes {
 		for _, edge := range repo.Languages.Edges {
-			languageCounts[edge.Node.Name] += edge.Size
-			totalSize += edge.Size
+			if !contains(excludeLanguages, edge.Node.Name) {
+				languageCounts[edge.Node.Name] += edge.Size
+				totalSize += edge.Size
+			}
 		}
 	}
-
 	languages := make([]Language, 0, len(languageCounts))
 	for name, size := range languageCounts {
 		percentage := float64(size) / float64(totalSize) * 100
@@ -478,4 +480,13 @@ func GetTopThreeLanguages(username string) ([]string, error) {
 	}
 
 	return languageLines, nil
+}
+
+func contains(slice []string, item string) bool {
+	for _, a := range slice {
+		if a == item {
+			return true
+		}
+	}
+	return false
 }
