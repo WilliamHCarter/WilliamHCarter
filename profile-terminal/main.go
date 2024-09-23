@@ -510,24 +510,23 @@ func addBarChart(languages []Language) []string {
 		solidBlocks := int(math.Max(0, math.Floor(lang.Percentage/100*float64(totalBarLength))))
 		log.Printf("Language: %s, Percentage: %.2f%%, Solid blocks: %d", lang.Name, lang.Percentage, solidBlocks)
 
-		if solidBlocks == 0 {
-			ditheredBlocks := 1
-			bar := strings.Repeat(ditheredBlock, ditheredBlocks)
-			bar = bar + strings.Repeat(" ", totalBarLength-ditheredBlocks)
-			line := fmt.Sprintf("%-*s %s %.2f%%", maxNameLength, lang.Name, bar, lang.Percentage)
-			chartLines = append(chartLines, line)
-		} else {
-			ditheredBlocks := 0
-			if solidBlocks < totalBarLength {
-				ditheredBlocks = 1
-			}
+		bar := make([]byte, totalBarLength)
 
-			bar := strings.Repeat(solidBlock, solidBlocks) + strings.Repeat(ditheredBlock, ditheredBlocks)
-			bar = bar + strings.Repeat(" ", totalBarLength-len(bar))
-			line := fmt.Sprintf("%-*s %s %.2f%%", maxNameLength, lang.Name, bar, lang.Percentage)
-			log.Printf("Formatted line: %s", line)
-			chartLines = append(chartLines, line)
+		for i := 0; i < solidBlocks && i < totalBarLength; i++ {
+			bar[i] = solidBlock[0]
 		}
+
+		if solidBlocks < totalBarLength {
+			bar[solidBlocks] = ditheredBlock[0]
+		}
+
+		for i := solidBlocks + 1; i < totalBarLength; i++ {
+			bar[i] = ' '
+		}
+
+		line := fmt.Sprintf("%-*s %s %.2f%%", maxNameLength, lang.Name, string(bar), lang.Percentage)
+		log.Printf("Formatted line: %s", line)
+		chartLines = append(chartLines, line)
 	}
 
 	return chartLines
