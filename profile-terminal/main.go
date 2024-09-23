@@ -1,12 +1,14 @@
 package handler
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 	"os"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -210,7 +212,13 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	commitsLine := fmt.Sprintf("Total Commits: %d", cachedCommitCount)
 	logger.Printf("Current cached commit count: %d\n", cachedCommitCount)
 
-	infoLines := []string{commitsLine, "Lorem ipsum dolor sit amet", "Consectetur adipiscing elit", "Sed do eiusmod tempor incididunt"}
+	languageLines, err := GetTopThreeLanguages("WilliamHCarter")
+	if err != nil {
+		logger.Printf("Error fetching top languages: %v\n", err)
+		return
+	}
+
+	infoLines := append([]string{commitsLine, "Top Languages:"}, languageLines...)
 	infoBox := createInfoBox("Info", infoLines)
 
 	projectLinks := []string{"https://github.com/WilliamHCarter/zfetch", "https://github.com/WilliamHCarter/RattlesnakeRidge", "https://github.com/WilliamHCarter/LyreMusicPlayer"}
@@ -355,4 +363,119 @@ func GetTotalCommits(username string) (int, error) {
 
 	logger.Printf("Total commits counted: %d\n", result.TotalCount)
 	return result.TotalCount, nil
+}
+
+type Language struct {
+	Name       string
+	Percentage float64
+}
+
+type LanguageEdge struct {
+	Size int `json:"size"`
+	Node struct {
+		Name string `json:"name"`
+	} `json:"node"`
+}
+
+type Repository struct {
+	Languages struct {
+		Edges []LanguageEdge `json:"edges"`
+	} `json:"languages"`
+}
+
+type GraphQLResponse struct {
+	Data struct {
+		User struct {
+			Repositories struct {
+				Nodes []Repository `json:"nodes"`
+			} `json:"repositories"`
+		} `json:"user"`
+	} `json:"data"`
+}
+
+func GetTopThreeLanguages(username string) ([]string, error) {
+	url := "https://api.github.com/graphql"
+	query := fmt.Sprintf(`
+	{
+		user(login: "%s") {
+			repositories(ownerAffiliations: OWNER, isFork: false, first: 100) {
+				nodes {
+					languages(first: 10, orderBy: {field: SIZE, direction: DESC}) {
+						edges {
+							size
+							node {
+								name
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	`, username)
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	reqBody := map[string]string{"query": query}
+	jsonBody, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling request body: %v", err)
+	}
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonBody))
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	token := os.Getenv("GITHUB_TOKEN") //Set through vercel
+	if token == "" {
+		return nil, fmt.Errorf("GITHUB_TOKEN environment variable is not set")
+	}
+
+	req.Header.Set("Authorization", "Bearer "+token)
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("API request failed with status code: %d", resp.StatusCode)
+	}
+
+	var result GraphQLResponse
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return nil, fmt.Errorf("error decoding response: %v", err)
+	}
+
+	languageCounts := make(map[string]int)
+	totalSize := 0
+
+	for _, repo := range result.Data.User.Repositories.Nodes {
+		for _, edge := range repo.Languages.Edges {
+			languageCounts[edge.Node.Name] += edge.Size
+			totalSize += edge.Size
+		}
+	}
+
+	languages := make([]Language, 0, len(languageCounts))
+	for name, size := range languageCounts {
+		percentage := float64(size) / float64(totalSize) * 100
+		languages = append(languages, Language{Name: name, Percentage: percentage})
+	}
+
+	sort.Slice(languages, func(i, j int) bool {
+		return languages[i].Percentage > languages[j].Percentage
+	})
+
+	if len(languages) > 3 {
+		languages = languages[:3]
+	}
+
+	languageLines := make([]string, len(languages))
+	for i, lang := range languages {
+		languageLines[i] = fmt.Sprintf("%s: %.2f%%", lang.Name, lang.Percentage)
+	}
+
+	return languageLines, nil
 }
