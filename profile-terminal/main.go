@@ -218,11 +218,14 @@ func createInfoBox(title string, lines []string) string {
 	boxWidth := 50
 	titlePadding := (boxWidth - len(title) - 2) / 2
 
-	paddedLines := make([]string, len(lines)+1)
-	paddedLines[0] = "│" + strings.Repeat(" ", boxWidth-1)
+	paddedLines := make([]string, len(lines))
 	for i, line := range lines {
 		linePadding := boxWidth - len(line) - 2
-		paddedLines[i] = fmt.Sprintf(" %s%s │", line, strings.Repeat(" ", linePadding))
+		if i == 0 {
+			paddedLines[i] = fmt.Sprintf("| %s%s │", line, strings.Repeat(" ", linePadding))
+		} else {
+			paddedLines[i] = fmt.Sprintf(" %s%s │", line, strings.Repeat(" ", linePadding))
+		}
 	}
 
 	infoBox := fmt.Sprintf(`┌%s %s %s┐
@@ -265,7 +268,7 @@ func createProjectBox(title string, lines []string, links []string) string {
 	for i, line := range infoBoxLines {
 		line = strings.ReplaceAll(line, " ", "&#160;")
 		if i > 0 && i <= len(lines) {
-			line = fmt.Sprintf("<a xlink:href=\"%s\" class=\"text\">%s</a>", links[i-1], line)
+			line = fmt.Sprintf("<a xlink:href=\"%s\" class=\"fill: #F69525\">%s</a>", links[i-1], line)
 		}
 		processedInfoBox += "<tspan x=\"50%\" dy=\"1.2em\">" + line + "</tspan>"
 	}
