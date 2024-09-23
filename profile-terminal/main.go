@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"encoding/json"
 	"fmt"
 	"html/template"
 	"log"
@@ -98,7 +97,7 @@ const svgTemplate = `<svg width="400" height="280" xmlns="http://www.w3.org/2000
 			}
 		]]>
 	</script>
-	</svg>`
+</svg>`
 
 type SVGData struct {
 	Text            template.HTML
@@ -132,7 +131,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 	if time.Since(lastUpdateTime) > 24*time.Hour {
 		logger.Println("Updating commit count...")
-		count, err := getTotalCommits("WilliamHCarter")
+		count, err := GetTotalCommits("WilliamHCarter")
 		if err == nil {
 			cachedCommitCount = count
 			lastUpdateTime = time.Now()
@@ -180,15 +179,11 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	commitsLine := fmt.Sprintf("Total Commits: %d", cachedCommitCount)
 	logger.Printf("Current cached commit count: %d\n", cachedCommitCount)
 
-	infoBox := createInfoBox("Info", commitsLine, "Lorem ipsum dolor sit amet", "Consectetur adipiscing elit", "Sed do eiusmod tempor incididunt")
-	processedInfoBox := ""
-	infoBoxLines := strings.Split(infoBox, "\n")
-	for _, line := range infoBoxLines {
-		line = strings.ReplaceAll(line, " ", "&#160;")
-		processedInfoBox += "<tspan x=\"50%\" dy=\"1.2em\">" + line + "</tspan>"
-	}
+	infoLines := []string{commitsLine, "Lorem ipsum dolor sit amet", "Consectetur adipiscing elit", "Sed do eiusmod tempor incididunt"}
+	infoBox := createInfoBox("Info", infoLines)
 
-	projectBox := createProjectBox()
+	projectLinks := []string{"https://github.com/WilliamHCarter/zfetch", "https://github.com/WilliamHCarter/RattlesnakeRidge", "https://github.com/WilliamHCarter/LyreMusicPlayer"}
+	projectBox := createProjectBox("Projects", []string{"zfetch", "Rattlesnake Ridge", "Lyre Music Player"}, projectLinks)
 
 	backgroundColor := r.URL.Query().Get("background_color")
 	if backgroundColor == "" {
@@ -202,7 +197,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 	data := SVGData{
 		Text:            template.HTML(processedText),
-		InfoText:        template.HTML(processedInfoBox),
+		InfoText:        template.HTML(infoBox),
 		ProjectText:     template.HTML(projectBox),
 		BackgroundColor: backgroundColor,
 		TextColor:       textColor,
@@ -218,76 +213,59 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func createInfoBox(title, line1, line2, line3, line4 string) string {
+func createInfoBox(title string, lines []string) string {
 	boxWidth := 50
 	titlePadding := (boxWidth - len(title) - 2) / 2
-	line1Padding := boxWidth - len(line1) - 2
-	line2Padding := boxWidth - len(line2) - 2
-	line3Padding := boxWidth - len(line3) - 2
-	line4Padding := boxWidth - len(line4) - 2
 
-	return fmt.Sprintf(`
-    ┌%s %s %s┐
-    │ %s%s │
-    │ %s%s │
-    │ %s%s │
-    │ %s%s │
-    └%s┘`,
+	paddedLines := make([]string, len(lines))
+	for i, line := range lines {
+		linePadding := boxWidth - len(line) - 2
+		paddedLines[i] = fmt.Sprintf(" %s%s │", line, strings.Repeat(" ", linePadding))
+	}
+
+	infoBox := fmt.Sprintf(`┌%s %s %s┐
+%s
+└%s┘`,
 		strings.Repeat("─", titlePadding), title, strings.Repeat("─", boxWidth-titlePadding-len(title)-2),
-		line1, strings.Repeat(" ", line1Padding),
-		line2, strings.Repeat(" ", line2Padding),
-		line3, strings.Repeat(" ", line3Padding),
-		line4, strings.Repeat(" ", line4Padding),
+		strings.Join(paddedLines, "\n│"),
 		strings.Repeat("─", boxWidth))
+
+	processedInfoBox := ""
+
+	infoBoxLines := strings.Split(infoBox, "\n")
+	for _, line := range infoBoxLines {
+		line = strings.ReplaceAll(line, " ", "&#160;")
+		processedInfoBox += "<tspan x=\"50%\" dy=\"1.2em\">" + line + "</tspan>"
+	}
+	return processedInfoBox
 }
 
-func createProjectBox() string {
-	return fmt.Sprintf(`
-┌─────── Projects ───────┐
-<a onclick="visit('https://github.com/williamhcarter/zfetch')"><tspan class="project-line"><tspan class="bg" fill="none">│ %-24s │</tspan><tspan class="fg" fill="#58a6ff">│ %-24s │</tspan></tspan></a>
-<a onclick="visit('https://github.com/williamhcarter/rattlesnakeridge')"><tspan class="project-line"><tspan class="bg" fill="none">│ %-24s │</tspan><tspan class="fg" fill="#58a6ff">│ %-24s │</tspan></tspan></a>
-<a onclick="visit('https://github.com/williamhcarter/lyremusicplayer')"><tspan class="project-line"><tspan class="bg" fill="none">│ %-24s │</tspan><tspan class="fg" fill="#58a6ff">│ %-24s │</tspan></tspan></a>
-└──────────────────────┘`, "zfetch", "zfetch", "Rattlesnake Ridge", "Rattlesnake Ridg", "Lyre Music Player", "Lyre Music Player")
-}
+func createProjectBox(title string, lines []string, links []string) string {
+	boxWidth := 50
+	titlePadding := (boxWidth - len(title) - 2) / 2
 
-// =========================== Queries ===========================
-func getTotalCommits(username string) (int, error) {
-	logger.Printf("Fetching commit count for user: %s\n", username)
-
-	url := fmt.Sprintf("https://api.github.com/search/commits?q=author:%s", username)
-
-	client := &http.Client{Timeout: 10 * time.Second}
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		logger.Printf("Error creating request: %v\n", err)
-		return 0, err
+	paddedLines := make([]string, len(lines))
+	for i, line := range lines {
+		linePadding := boxWidth - len(line) - 2
+		paddedLines[i] = fmt.Sprintf(" %s%s │", line, strings.Repeat(" ", linePadding))
 	}
 
-	req.Header.Set("User-Agent", "GetCommitsAgent")
-	req.Header.Set("Accept", "application/vnd.github.cloak-preview")
+	infoBox := fmt.Sprintf(`┌%s %s %s┐
+%s
+└%s┘`,
+		strings.Repeat("─", titlePadding), title, strings.Repeat("─", boxWidth-titlePadding-len(title)-2),
+		strings.Join(paddedLines, "\n│"),
+		strings.Repeat("─", boxWidth))
 
-	logger.Println("Sending request to GitHub API...")
-	resp, err := client.Do(req)
-	if err != nil {
-		logger.Printf("Error sending request: %v\n", err)
-		return 0, err
+	processedInfoBox := ""
+
+	infoBoxLines := strings.Split(infoBox, "\n")
+	for i, line := range infoBoxLines {
+		line = strings.ReplaceAll(line, " ", "&#160;")
+		if i > 0 && i <= len(lines) {
+			line = fmt.Sprintf("<a xlink:href=\"%s\">%s</a>", links[i-1], line)
+		}
+		processedInfoBox += "<tspan x=\"50%\" dy=\"1.2em\">" + line + "</tspan>"
 	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		logger.Printf("API request failed with status code: %d\n", resp.StatusCode)
-		return 0, fmt.Errorf("API request failed with status code: %d", resp.StatusCode)
-	}
-
-	var result struct {
-		TotalCount int `json:"total_count"`
-	}
-
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		logger.Printf("Error decoding response: %v\n", err)
-		return 0, err
-	}
-
-	logger.Printf("Total commits counted: %d\n", result.TotalCount)
-	return result.TotalCount, nil
+	return processedInfoBox
 }
