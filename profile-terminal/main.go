@@ -12,6 +12,12 @@ import (
 	"time"
 )
 
+// func main() {
+// 	http.HandleFunc("/", Handler)
+// 	log.Println("Server starting on http://localhost:8080")
+// 	log.Fatal(http.ListenAndServe(":8080", nil))
+// }
+
 const svgTemplate = `<svg width="400" height="280" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <defs>
         <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
@@ -47,14 +53,34 @@ const svgTemplate = `<svg width="400" height="280" xmlns="http://www.w3.org/2000
     </defs>
     
     <style>
+		.fmt {
+			font-family: monospace; 
+			font-size: 9px;
+			font-weight: bold;
+		}
         .text { 
+			font-family: monospace; 
+			font-size: 9px;
+			font-weight: bold;
             fill: #{{.TextColor}}; 
-            font-family: monospace; 
-            font-size: 9px;
-            font-weight: bold;
             filter: url(#glow);
             opacity: 0.8;
         }
+        .highlight-group rect:hover {
+            opacity: 0.2;
+            transition: opacity 0.3s ease-in-out;
+			fill: #F69525;
+        }
+		.highlight-group rect {
+            transition: opacity 0.3s ease-in-out;
+        }
+		.highlight-group text {
+            pointer-events: none;
+        }
+        .highlight-group a {
+            cursor: pointer;
+        }
+
         @keyframes scanline {
             0% {
                 transform: translateY(-100%);
@@ -83,7 +109,10 @@ const svgTemplate = `<svg width="400" height="280" xmlns="http://www.w3.org/2000
         <text x="50%" y="140" class="text" text-anchor="middle" xml:space="preserve">{{.InfoText}}</text>
 
 		<!-- Project Box Text layer -->]
-		<text x="50%" y="210" text-anchor="middle" xml:space="preserve">{{.ProjectText}}</text>
+		<g class="highlight-group">
+			{{.ProjectRects}}
+			<text x="50%" y="210" text-anchor="middle" class="fmt" xml:space="preserve">{{.ProjectText}}</text>
+		</g>
 
         <!-- CRT overlay -->
         <rect width="100%" height="100%" fill="url(#crtPattern)" style="mix-blend-mode: overlay; pointer-events: none;"/>
@@ -104,6 +133,7 @@ type SVGData struct {
 	Text            template.HTML
 	InfoText        template.HTML
 	ProjectText     template.HTML
+	ProjectRects    template.HTML
 	BackgroundColor string
 	TextColor       string
 }
@@ -184,7 +214,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	infoBox := createInfoBox("Info", infoLines)
 
 	projectLinks := []string{"https://github.com/WilliamHCarter/zfetch", "https://github.com/WilliamHCarter/RattlesnakeRidge", "https://github.com/WilliamHCarter/LyreMusicPlayer"}
-	projectBox := createProjectBox("Projects", []string{"zfetch", "Rattlesnake Ridge", "Lyre Music Player"}, projectLinks)
+	projectBox, projectRects := createProjectBox("Projects", []string{"zfetch", "Rattlesnake Ridge", "Lyre Music Player"}, projectLinks)
 
 	backgroundColor := r.URL.Query().Get("background_color")
 	if backgroundColor == "" {
@@ -200,6 +230,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		Text:            template.HTML(processedText),
 		InfoText:        template.HTML(infoBox),
 		ProjectText:     template.HTML(projectBox),
+		ProjectRects:    template.HTML(projectRects),
 		BackgroundColor: backgroundColor,
 		TextColor:       textColor,
 	}
@@ -222,7 +253,7 @@ func createInfoBox(title string, lines []string) string {
 	for i, line := range lines {
 		linePadding := boxWidth - len(line) - 2
 		if i == 0 {
-			paddedLines[i] = fmt.Sprintf("| %s%s │", line, strings.Repeat(" ", linePadding))
+			paddedLines[i] = fmt.Sprintf("│ %s%s │", line, strings.Repeat(" ", linePadding))
 		} else {
 			paddedLines[i] = fmt.Sprintf(" %s%s │", line, strings.Repeat(" ", linePadding))
 		}
@@ -245,7 +276,7 @@ func createInfoBox(title string, lines []string) string {
 	return processedInfoBox
 }
 
-func createProjectBox(title string, lines []string, links []string) string {
+func createProjectBox(title string, lines []string, links []string) (string, string) {
 	boxWidth := 50
 	titlePadding := (boxWidth - len(title) - 2) / 2
 
@@ -253,7 +284,7 @@ func createProjectBox(title string, lines []string, links []string) string {
 	for i, line := range lines {
 		linePadding := boxWidth - len(line) - 2
 		if i == 0 {
-			paddedLines[i] = fmt.Sprintf("| %s%s │", line, strings.Repeat(" ", linePadding))
+			paddedLines[i] = fmt.Sprintf("│ %s%s │", line, strings.Repeat(" ", linePadding))
 		} else {
 			paddedLines[i] = fmt.Sprintf(" %s%s │", line, strings.Repeat(" ", linePadding))
 		}
@@ -263,10 +294,11 @@ func createProjectBox(title string, lines []string, links []string) string {
 %s
 └%s┘`,
 		strings.Repeat("─", titlePadding), title, strings.Repeat("─", boxWidth-titlePadding-len(title)-2),
-		strings.Join(paddedLines, "\n|"),
+		strings.Join(paddedLines, "\n│"),
 		strings.Repeat("─", boxWidth))
 
 	processedInfoBox := ""
+	rects := ""
 
 	infoBoxLines := strings.Split(infoBox, "\n")
 	for i, line := range infoBoxLines {
@@ -274,11 +306,13 @@ func createProjectBox(title string, lines []string, links []string) string {
 		if i > 0 && i <= len(lines) {
 			line = fmt.Sprintf("<a xlink:href=\"%s\" class=\"text\">%s</a>", links[i-1], line)
 			processedInfoBox += "<tspan x=\"50%\" dy=\"1.2em\">" + line + "</tspan>"
+			rects += fmt.Sprintf("<a href=\"%s\">"+"<rect x=\"73.5\" y=\"%d\" width=\"253\" height=\"11\" fill=\"#F69525\" opacity=\"0\"/>"+"</a>", links[i-1], 212+i*11)
+
 		} else {
 			processedInfoBox += "<tspan x=\"50%\" dy=\"1.2em\" class=\"text\">" + line + "</tspan>"
 		}
 	}
-	return processedInfoBox
+	return processedInfoBox, rects
 }
 
 // =========================== Queries ===========================
