@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-const svgTemplate = `<svg width="400" height="280" xmlns="http://www.w3.org/2000/svg">
+const svgTemplate = `<svg width="400" height="280" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <defs>
         <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
             <feFlood result="flood" flood-color="#{{.TextColor}}" flood-opacity=".4"/>
