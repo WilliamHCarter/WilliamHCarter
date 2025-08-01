@@ -154,7 +154,7 @@ var (
 )
 
 func init() {
-	logger = log.New(os.Stdout, "", log.Ldate|log.Ltime)
+	logger = log.New(os.Stderr, "[PROFILE-TERMINAL] ", log.Ldate|log.Ltime|log.Lshortfile)
 }
 
 func Handler(w http.ResponseWriter, r *http.Request) {
